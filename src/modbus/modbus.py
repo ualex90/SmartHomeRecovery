@@ -35,10 +35,24 @@ def get_set_value(device: Dev) -> list:
     return [hr0, int(hr1, 16)]
 
 
-def read_registers(device: Dev):
+def read_scenarios(device: Dev, quantity=10) -> list:
+    """"
+    Read scenarios from the device
+    :param device: object of the Dev
+    :param quantity: quantity of scenarios
+    :return: list of scenarios
+    """
 
+    scenarios = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id)
+
+        n = 100
+        for i in range(quantity):
+            scenarios.append({("Сценарий " + str(i)): [hex(i) for i in client.read_holding_registers(n, 13)]})
+            n += 20
+
         client.close()
     except ValueError:
         print(f"Error connecting to {device.ip}:{device.port}")
+    return scenarios
