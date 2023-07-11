@@ -1,3 +1,5 @@
+import time
+
 from pyModbusTCP.client import ModbusClient
 
 from src.models.Dev import Dev
@@ -35,6 +37,29 @@ def get_set_value(device: Dev) -> list:
     return [hr0, int(hr1, 16)]
 
 
+def get_single_holding(device: Dev, register) -> list:
+    try:
+        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id)
+        register = [hex(i) for i in client.read_holding_registers(register)]
+        client.close()
+        if register:
+            return register
+        else:
+            return ['unable to read register']
+    except ValueError:
+        print(f"Error connecting to {device.ip}:{device.port}")
+
+
+def get_info(device: Dev):
+    """"
+    Get information about the devices
+    :return: info of devices
+    """
+    counter = int(get_single_holding(device, 92)[0], 16)
+
+    return f"""Счетчик записей flash: {counter}"""
+
+
 def read_scenarios(device: Dev, quantity=10) -> list:
     """"
     Read scenarios from the device
@@ -46,13 +71,17 @@ def read_scenarios(device: Dev, quantity=10) -> list:
     scenarios = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id)
-
         n = 100
         for i in range(quantity):
-            scenarios.append({("Сценарий " + str(i)): [hex(i) for i in client.read_holding_registers(n, 13)]})
+            regs = [hex(i) for i in client.read_holding_registers(n, 13)]
+            if regs:
+                scenarios.append({("Сценарий " + str(i)): regs})
+            else:
+                scenarios.append({("Сценарий " + str(i)): 'unable to read registers'})
+            time.sleep(0.01)
             n += 20
-
         client.close()
     except ValueError:
         print(f"Error connecting to {device.ip}:{device.port}")
     return scenarios
+
