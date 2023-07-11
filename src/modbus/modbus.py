@@ -21,7 +21,7 @@ def get_single_holding(device: Dev, register) -> list:
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        print(f"Error connecting to {device.ip}:{device.port}")
+        return [f"Error connecting to {device.ip}:{device.port}"]
 
     if reg:
         return reg
@@ -43,7 +43,7 @@ def get_single_input(device: Dev, register) -> list:
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        print(f"Error connecting to {device.ip}:{device.port}")
+        return [f"Error connecting to {device.ip}:{device.port}"]
 
     if reg:
         return reg
@@ -64,7 +64,8 @@ def get_device_info(device: Dev) -> str:
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        print(f"Error connecting to {device.ip}:{device.port}")
+        return f"Error connecting to {device.ip}:{device.port}"
+
     if info:
         return f"""Тип устройства: {info[3]}
                  \rСерийный номер: {info[11]}-{info[12]}-{info[13]}-{info[14]}-{info[15]}-{info[16]} 
@@ -98,5 +99,6 @@ def read_scenarios(device: Dev, quantity=10) -> list:
             n += 20
         client.close()
     except ValueError and TypeError:
-        print(f"Error connecting to {device.ip}:{device.port}")
+        return [f"Error connecting to {device.ip}:{device.port}"]
+
     return scenarios
