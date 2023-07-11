@@ -3,7 +3,7 @@ from src.modbus.modbus import read_scenarios, get_device_info
 from src.models.Dev import Dev
 
 # Создание объекта модуля (данные клиента tcp, данные модуля)
-device = Dev(CLIENTS[0], MODULES[0])
+device = Dev(CLIENTS[1], MODULES[0])
 
 # Создание объекта со значениями по-умлолчанию(данные клиента tcp)
 default = Dev(CLIENTS[0])
