@@ -4,6 +4,7 @@ class Dev:
         self.port = client.get("port") if client is not None else 502
         self.name = module.get('name') if module is not None else 'Default'
         self.model = module.get('model') if module is not None else 'Razumdom'
+        self.description = module.get('description') if module is not None else 'Default device'
         self.unit_id = module.get('unit_id') if module is not None else 1
         self.baud_rate = module.get('baud_rate') if module is not None else 9600
         self.data_bits = module.get('data_bits') if module is not None else 8
@@ -13,6 +14,7 @@ class Dev:
         self.reboot = 5678
 
     def __str__(self):
-        return f'''Device name: {self.name}
-                 \rModel: {self.model}
+        return f'''Имя модуля: {self.name}
+                 \rМодель: {self.model}
+                 \rОписание: {self.description}
                  \rmodbus: {self.baud_rate}/{self.data_bits}-{self.parity}-{self.stop_bits}'''
