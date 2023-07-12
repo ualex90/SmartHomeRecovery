@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 pymodbustcp = "^0.2.0"
+oyaml = "^1.0"
 
 
 [tool.poetry.group.dev.dependencies]

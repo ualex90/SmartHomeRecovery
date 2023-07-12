@@ -9,6 +9,9 @@ device = Dev(CLIENTS[0], MODULES[0])
 # Создание объекта со значениями по-умлолчанию(данные клиента tcp)
 default = Dev(CLIENTS[0])
 
+# добавление сценариев в объект модуля
+device.scenarios = read_scenarios(device, 2)
+
 # Свойства модуля
 print(device, "\n")
 

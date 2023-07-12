@@ -1,4 +1,4 @@
-import json
+import yaml
 
 from coverage import data
 
@@ -43,13 +43,16 @@ def get_mb_set_value(device: Dev) -> list:
     return [hr0, int(hr1, 16)]
 
 
-def write_config_module(device: Dev, scenarios):
+def write_config_module(device: Dev, scenarios=None):
     """
     Запись конфигурации модуля в файл.
     :param device:
     :param scenarios:
     :return:
     """
+
+    if scenarios is None:
+        scenarios = device.scenarios
 
     config_module = {device.name: {"model": device.model,
                                    "description": device.description,
@@ -61,5 +64,5 @@ def write_config_module(device: Dev, scenarios):
                                    }
                      }
 
-    with open(CONFIG_MODULE, "w", encoding="utf-8") as file_out:
-        json.dump(config_module, file_out, ensure_ascii=False, indent=2)
+    with open(CONFIG_MODULE, "w", encoding="UTF-8") as file_out:
+        yaml.safe_dump(config_module, file_out, sort_keys=False, allow_unicode=True)
