@@ -1,3 +1,8 @@
+import json
+
+from coverage import data
+
+from config.config import CONFIG_MODULE
 from src.models.Dev import Dev
 
 
@@ -37,3 +42,24 @@ def get_mb_set_value(device: Dev) -> list:
 
     return [hr0, int(hr1, 16)]
 
+
+def write_config_module(device: Dev, scenarios):
+    """
+    Запись конфигурации модуля в файл.
+    :param device:
+    :param scenarios:
+    :return:
+    """
+
+    config_module = {device.name: {"model": device.model,
+                                   "description": device.description,
+                                   "unit_id": device.unit_id,
+                                   "baud_rate": device.baud_rate,
+                                   "parity": device.parity,
+                                   "stop_bits": device.stop_bits,
+                                   "scenarios": scenarios,
+                                   }
+                     }
+
+    with open(CONFIG_MODULE, "w", encoding="utf-8") as file_out:
+        json.dump(config_module, file_out, ensure_ascii=False, indent=2)
