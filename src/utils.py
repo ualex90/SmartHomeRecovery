@@ -46,23 +46,31 @@ def get_mb_set_value(device: Dev) -> list:
 def write_config_module(device: Dev, scenarios=None):
     """
     Запись конфигурации модуля в файл.
-    :param device:
-    :param scenarios:
-    :return:
+    Если файл не существует, он будет создан.
+    :param device: Объект типа Dev.
+    :param scenarios: Список сценариев либо список сценариев будет взят со свойств объекта
+    :return: Результат записи в файл.
     """
 
     if scenarios is None:
         scenarios = device.scenarios
 
-    config_module = {device.name: {"model": device.model,
-                                   "description": device.description,
-                                   "unit_id": device.unit_id,
-                                   "baud_rate": device.baud_rate,
-                                   "parity": device.parity,
-                                   "stop_bits": device.stop_bits,
-                                   "scenarios": scenarios,
-                                   }
-                     }
+    try:
+        with open(CONFIG_MODULE, "r", encoding="UTF-8") as file_in:
+            config_module = yaml.safe_load(file_in)
+    except FileNotFoundError:
+        file = open(CONFIG_MODULE, "w")
+        file.close()
+        config_module = dict()
 
-    with open(CONFIG_MODULE, "a", encoding="UTF-8") as file_out:
+    config_module[device.name] = {"model": device.model,
+                                  "description": device.description,
+                                  "unit_id": device.unit_id,
+                                  "baud_rate": device.baud_rate,
+                                  "parity": device.parity,
+                                  "stop_bits": device.stop_bits,
+                                  "scenarios": scenarios,
+                                  }
+
+    with open(CONFIG_MODULE, "w", encoding="UTF-8") as file_out:
         yaml.safe_dump(config_module, file_out, sort_keys=False, allow_unicode=True)
