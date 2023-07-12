@@ -1,7 +1,5 @@
 import yaml
 
-from coverage import data
-
 from config.config import CONFIG_MODULE
 from src.models.Dev import Dev
 
