@@ -64,5 +64,5 @@ def write_config_module(device: Dev, scenarios=None):
                                    }
                      }
 
-    with open(CONFIG_MODULE, "w", encoding="UTF-8") as file_out:
+    with open(CONFIG_MODULE, "a", encoding="UTF-8") as file_out:
         yaml.safe_dump(config_module, file_out, sort_keys=False, allow_unicode=True)
