@@ -41,6 +41,31 @@ def get_mb_set_value(device: Dev) -> list:
     return [hr0, int(hr1, 16)]
 
 
+def get_config_modules(file) -> list:
+    """
+    Получение конфигурации модулей из файла.
+    :param file: Путь к файлу конфигурации модуля.
+    :return: Конфигурация модулей.
+    """
+    with open(file, "r", encoding="UTF-8") as file_in:
+        data = yaml.safe_load(file_in)
+
+    config_modules = list()
+    for name, data in data.items():
+        config_module = dict()
+        config_module["name"] = name
+        config_module["model"] = data["model"]
+        config_module["description"] = data["description"]
+        config_module["unit_id"] = data["unit_id"]
+        config_module["baud_rate"] = data["baud_rate"]
+        config_module["parity"] = data["parity"]
+        config_module["stop_bits"] = data["stop_bits"]
+        config_module["scenarios"] = data["scenarios"]
+        config_modules.append(config_module)
+
+    return config_modules
+
+
 def write_config_module(device: Dev, scenarios=None):
     """
     Запись конфигурации модуля в файл.
@@ -51,7 +76,6 @@ def write_config_module(device: Dev, scenarios=None):
     :param scenarios: Список сценариев либо список сценариев будет взят со свойств объекта
     :return: Результат записи в файл.
     """
-
     if scenarios is None:
         scenarios = device.scenarios
 
