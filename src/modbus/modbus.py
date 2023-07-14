@@ -6,15 +6,51 @@ from pyModbusTCP.client import ModbusClient
 from src.models.Dev import Dev
 
 
+def get_mb_set_value(device: Dev) -> list:
+    """
+    Генерация значений HR0 (адрес) и HR1 (параметры интерфейса).
+    :param device: Объект типа Dev.
+    :return: Список значений HR0 и HR1.
+    """
+    hr0 = hex(device.unit_id)
+    hr1 = str()
+    match device.parity:
+        case "N":
+            hr1 = "0x00"
+        case "E":
+            hr1 = "0x02"
+        case "O":
+            hr1 = "0x04"
+
+    match device.stop_bits:
+        case 1:
+            hr1 = "0x0" + str(int(hr1, 16) + 1)
+
+    match device.baud_rate:
+        case 9600:
+            hr1 += "00"
+        case 19200:
+            hr1 += "01"
+        case 38400:
+            hr1 += "02"
+        case 57600:
+            hr1 += "03"
+        case 115200:
+            hr1 += "04"
+        case 230400:
+            hr1 += "05"
+
+    return [hr0, hr1]
+
+
 def get_single_holding(device: Dev, register) -> list:
     """
-    Получение значения одного Holding Register
+    Чтение значения одного Holding Register
     :param device: Объект типа Dev
     :param register: Номер регистра
     :return: Значение регистра hex
     """
 
-    reg = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
         reg = [hex(i) for i in client.read_holding_registers(register) if not None]
@@ -28,15 +64,14 @@ def get_single_holding(device: Dev, register) -> list:
     return ['unable to read register']
 
 
-def get_single_input(device: Dev, register) -> list:
+def read_single_input(device: Dev, register) -> list:
     """
-    Получение значения одного Input Register
+    Чтение значения одного Input Register
     :param device: Объект типа Dev
     :param register: Номер регистра
     :return: Значение регистра hex
     """
 
-    reg = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
         reg = [hex(i) for i in client.read_input_registers(register) if not None]
@@ -50,14 +85,13 @@ def get_single_input(device: Dev, register) -> list:
     return ['unable to read register']
 
 
-def get_device_info(device: Dev) -> str:
+def raed_device_info(device: Dev) -> str:
     """"
-    Получение информации о устройстве
+    Чтение информации о устройстве
     :param device: Объект типа Dev
     :return: Информация о устройстве
     """
 
-    info = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
         info = client.read_input_registers(9000, 25)
@@ -88,17 +122,82 @@ def read_scenarios(device: Dev, quantity=10) -> list:
     scenarios = list()
     try:
         client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
-        n = 100
+        start_register = 100
         for i in range(quantity):
-            regs = [hex(i) for i in client.read_holding_registers(n, 13) if not None]
+            regs = [hex(i) for i in client.read_holding_registers(start_register, 13) if not None]
             if regs:
                 scenarios.append({("Сценарий " + str(i)): regs})
             else:
                 scenarios.append({("Сценарий " + str(i)): 'unable to read registers'})
             time.sleep(0.05)
-            n += 20
+            start_register += 20
         client.close()
     except ValueError and TypeError:
         return [f"Error connecting to {device.ip}:{device.port}"]
 
     return scenarios
+
+
+def write_single_holding(device: Dev, register, data):
+    """
+    Запись значения одного Holding Register
+    :param device: Объект типа Dev
+    :param register: Номер регистра
+    :param data: Значение регистра hex
+    :return: True если запись успешно записана или ошибка
+    """
+    try:
+        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        is_ok = client.write_single_register(register, int(data, 16))
+        time.sleep(0.1)
+        client.close()
+    except ValueError and TypeError:
+        return [f"Error connecting to {device.ip}:{device.port}"]
+
+    return "Ok" if is_ok else "Failed"
+
+
+def write_multiple_holdings(device: Dev, start_register, data):
+    """
+    Запись значения одного Holding Register
+    :param device: Объект типа Dev
+    :param start_register: Номер начального регистра
+    :param data: Значение регистра hex
+    :return: True если запись успешно записана или ошибка
+    """
+
+    try:
+        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        is_ok = client.write_multiple_registers(start_register, [int(i, 16) for i in data])
+        time.sleep(0.1)
+        client.close()
+    except ValueError:
+        return [f"Error connecting to {device.ip}:{device.port}"]
+
+    return "Ok" if is_ok else "Failed"
+
+
+def write_module(device: Dev, scenarios=None):
+    """
+    Запись параметров MODBUS и сценариев в память модуля
+    :param device: Объект типа Dev
+    :param scenarios: Список сценариев
+    :return: Результат записи
+    """
+    if scenarios is None:
+        scenarios = device.scenarios
+
+    write_status = list()
+
+    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, 0, get_mb_set_value(device)))
+
+    start_register = 100
+    for scenario in device.scenarios:
+        number = list(scenario.keys())[0]
+        data = list(scenario.values())[0]
+        write_status.append(number + ': ' + write_multiple_holdings(device, start_register, data))
+        start_register += 20
+
+    write_status.append('Перезагрузка: ' + write_single_holding(device, device.reboot, '0xFF'))
+
+    return write_status
