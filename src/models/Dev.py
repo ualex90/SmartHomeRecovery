@@ -18,6 +18,8 @@ class Dev:
 
     def __str__(self):
         return f'''Имя модуля: {self.name}
-                 \rМодель: {self.model}
-                 \rОписание: {self.description}
-                 \rmodbus: {self.baud_rate}/{self.data_bits}-{self.parity}-{self.stop_bits}'''
+Модель: {self.model}
+Описание: {self.description}
+modbus: {self.baud_rate}/{self.data_bits}-{self.parity}-{self.stop_bits}
+Количество сценариев: {len(self.scenarios)}
+--------------------------------'''
