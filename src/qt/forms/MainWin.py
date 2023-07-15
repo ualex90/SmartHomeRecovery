@@ -49,4 +49,3 @@ class MainWin(Ui_MainWindow):
 
         return self.change_module
 
-    00
