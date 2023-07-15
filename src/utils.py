@@ -54,13 +54,14 @@ def get_config_modules(file) -> list:
     for name, data in data.items():
         config_module = dict()
         config_module["name"] = name
-        config_module["model"] = data["model"]
-        config_module["description"] = data["description"]
-        config_module["unit_id"] = data["unit_id"]
-        config_module["baud_rate"] = data["baud_rate"]
-        config_module["parity"] = data["parity"]
-        config_module["stop_bits"] = data["stop_bits"]
-        config_module["scenarios"] = data["scenarios"]
+        config_module["model"] = data.get("model")
+        config_module["description"] = data.get("description")
+        config_module["unit_id"] = data.get("unit_id")
+        config_module["baud_rate"] = data.get("baud_rate")
+        config_module["data_bits"] = data.get("data_bits")
+        config_module["parity"] = data.get("parity")
+        config_module["stop_bits"] = data.get("stop_bits")
+        config_module["scenarios"] = data.get("scenarios")
         config_modules.append(config_module)
 
     return config_modules
@@ -91,6 +92,7 @@ def write_config_module(device: Dev, scenarios=None):
                                   "description": device.description,
                                   "unit_id": device.unit_id,
                                   "baud_rate": device.baud_rate,
+                                  "data_bits": device.data_bits,
                                   "parity": device.parity,
                                   "stop_bits": device.stop_bits,
                                   "scenarios": scenarios,

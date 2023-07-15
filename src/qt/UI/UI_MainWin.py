@@ -16,11 +16,14 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.device_box = QtWidgets.QComboBox(parent=self.centralwidget)
-        self.device_box.setGeometry(QtCore.QRect(10, 30, 351, 25))
+        self.device_box.setGeometry(QtCore.QRect(10, 30, 411, 25))
         self.device_box.setObjectName("device_box")
         self.device_list = QtWidgets.QListWidget(parent=self.centralwidget)
-        self.device_list.setGeometry(QtCore.QRect(10, 80, 351, 681))
+        self.device_list.setGeometry(QtCore.QRect(10, 80, 411, 681))
         self.device_list.setObjectName("device_list")
+        self.raed_device_button = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.raed_device_button.setGeometry(QtCore.QRect(440, 30, 171, 25))
+        self.raed_device_button.setObjectName("raed_device_button")
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -29,6 +32,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.raed_device_button.setText(_translate("MainWindow", "Прочитать модуль"))
 
 
 if __name__ == "__main__":

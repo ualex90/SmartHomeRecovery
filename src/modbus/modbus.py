@@ -85,7 +85,7 @@ def read_single_input(device: Dev, register) -> list:
     return ['unable to read register']
 
 
-def raed_device_info(device: Dev) -> str:
+def raed_module_info(device: Dev) -> str:
     """"
     Чтение информации о устройстве
     :param device: Объект типа Dev
@@ -102,12 +102,12 @@ def raed_device_info(device: Dev) -> str:
 
     if info:
         return f"""Тип устройства: {info[3]}
-                 \rСерийный номер: {info[11]}-{info[12]}-{info[13]}-{info[14]}-{info[15]}-{info[16]} 
-                 \rВерсия ПО: {info[2]}.{info[0]}{info[1]}
-                 \rДата: {datetime(info[7], info[6], info[5], info[8], info[9]).strftime('%m.%d.%Y %H:%M')}
-                 \rСчетчик наработки часов: {info[21]}
-                 \rСчетчик записей flash: {info[22]}
-                 \rКоличество переключений (~/=): {info[23]}/{info[24]}"""
+Серийный номер: {info[11]}-{info[12]}-{info[13]}-{info[14]}-{info[15]}-{info[16]} 
+Версия ПО: {info[2]}.{info[0]}{info[1]}
+Дата: {datetime(info[7], info[6], info[5], info[8], info[9]).strftime('%m.%d.%Y %H:%M')}
+Счетчик наработки часов: {info[21]}
+Счетчик записей flash: {info[22]}
+Количество переключений (~/=): {info[23]}/{info[24]}"""
     return 'unable to read register'
 
 

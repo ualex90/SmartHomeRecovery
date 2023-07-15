@@ -3,6 +3,7 @@ Module_A3:
   description: Управление оборудованием 230V
   unit_id: 3
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -123,6 +124,7 @@ Module_A4:
   description: Питание кондиционера в прихожей
   unit_id: 4
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -240,9 +242,10 @@ Module_A4:
     - '0x0'
 Module_A5:
   model: Razumdom_DRM21R
-  description: Питание кондиционера в гостинной
+  description: Питание кондиционера в гостиной
   unit_id: 5
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -257,7 +260,7 @@ Module_A5:
     - '0x1'
     - '0x0'
     - '0x1'
-    - '0x3'
+    - '0x1'
     - '0x0'
     - '0x0'
   - Сценарий 1:
@@ -363,6 +366,7 @@ Module_A6:
   description: Питание бойлера
   unit_id: 6
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -483,6 +487,7 @@ Module_A8:
   description: Управление оборудованием 24V
   unit_id: 8
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -603,6 +608,7 @@ Module_A9:
   description: Диммер подсветки прихожей и предбанника
   unit_id: 9
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -723,6 +729,7 @@ Module_A10:
   description: Диммер подсветки кухонного гарнитура
   unit_id: 10
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:
@@ -843,6 +850,7 @@ Module_A11:
   description: Диммер подсветки детской
   unit_id: 11
   baud_rate: 115200
+  data_bits: 8
   parity: N
   stop_bits: 1
   scenarios:

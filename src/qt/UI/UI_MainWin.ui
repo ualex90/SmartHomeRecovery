@@ -19,7 +19,7 @@
      <rect>
       <x>10</x>
       <y>30</y>
-      <width>351</width>
+      <width>411</width>
       <height>25</height>
      </rect>
     </property>
@@ -29,9 +29,22 @@
      <rect>
       <x>10</x>
       <y>80</y>
-      <width>351</width>
+      <width>411</width>
       <height>681</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="raed_device_button">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>30</y>
+      <width>171</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Прочитать модуль</string>
     </property>
    </widget>
   </widget>
