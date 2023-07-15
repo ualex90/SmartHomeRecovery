@@ -28,4 +28,5 @@ print(device, "\n")
 # write_config_module(device, scenarios)
 
 # # Запись параметров MODBUS и сценариев в память модуля, вывод результата
-[print(i) for i in write_module(device)]
+mb_settings = ["0x0001", '0x0000']
+[print(i) for i in write_module(device, mb_settings)]
