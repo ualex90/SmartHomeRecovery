@@ -44,13 +44,22 @@ class MainWin(Ui_MainWindow):
         :param module: выбранный модуль
         :param client: клиент
         """
+        # создание объекта класса Dev
         self.change_module = Dev(client, self.modules[module])
+        # очистка device_list
         self.device_list.clear()
+        # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
-        print(self.change_module)
 
     def read_module(self):
+        """
+        Чтение памяти модуля
+        """
+        # очистка device_list
         self.device_list.clear()
+        # чтение сценариев из модуля и добавление их в объект
         self.change_module.scenarios = read_scenarios(self.change_module, 8)
+        # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
+        # чтение данных из модуля и вывод в device_list
         self.device_list.addItem(raed_module_info(self.change_module))
