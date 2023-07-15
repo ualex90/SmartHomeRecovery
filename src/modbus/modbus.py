@@ -109,7 +109,7 @@ def raed_module_info(device: Dev) -> str:
 Счетчик записей flash: {info[22]}
 Количество переключений (~/=): {info[23]}/{info[24]}
 --------------------------------------------------------"""
-    return 'unable to read register'
+    return 'unable to read register module_info'
 
 
 def read_scenarios(device: Dev, quantity=10) -> list:

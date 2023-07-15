@@ -1,7 +1,7 @@
 import sys
 from PyQt6 import QtWidgets
 
-from config.config import CONFIG_MODULE
+from config.config import CONFIG_MODULE, CLIENTS
 from src.qt.forms.MainWin import MainWin
 from src.utils import get_config_modules
 
@@ -13,7 +13,7 @@ def main():
     # Запуск приложения
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    main_win = MainWin(modules, MainWindow)
+    main_win = MainWin(CLIENTS, modules, MainWindow)
     main_win.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())

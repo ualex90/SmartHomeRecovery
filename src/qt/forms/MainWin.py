@@ -11,8 +11,10 @@ class MainWin(Ui_MainWindow):
     Main window. Основное окно приложения.
     Объект унаследован от сосзданной формы при помощи QT Designer.
     """
-    def __init__(self, modules, MainWindow):
+    def __init__(self, clients, modules, MainWindow):
+        self.clients = clients
         self.modules = modules
+        self.change_client = None
         self.change_module = None
         self.MainWindow = MainWindow
 
@@ -25,27 +27,31 @@ class MainWin(Ui_MainWindow):
         """
         super().setupUi(self.MainWindow)
 
-        self.add_module_in_device_box(self.modules)
-        self.raed_device_button.clicked.connect(self.read_module)
+        # Заполнение client_box списком  клиентов и запуск функции выбора модуля
+        self.client_changed(0)
+        for client in range(len(self.clients)):
+            self.client_box.addItem(self.clients[client].get("name"))
+        self.client_box.currentIndexChanged.connect(self.client_changed)
 
-    def add_module_in_device_box(self, modules):
-        """
-        Заполнения device_box для выбора модуля
-        :param modules: список конфигураций модулей
-        """
+        # Заполнение device_box списком модулей и запуск функции выбора модуля
         self.module_changed(0)
-        for module in range(len(modules)):
-            self.device_box.addItem(modules[module].get("name"))
+        for module in range(len(self.modules)):
+            self.device_box.addItem(self.modules[module].get("name"))
         self.device_box.currentIndexChanged.connect(self.module_changed)
 
-    def module_changed(self, module, client=CLIENTS[0]):
+        # Запуск чтения памяти модуля
+        self.raed_device_button.clicked.connect(self.read_module)
+
+    def client_changed(self, client):
+        self.change_client = self.clients[client]
+
+    def module_changed(self, module):
         """
         Выбора модуля. Создание объекта класса Dev.
         :param module: выбранный модуль
-        :param client: клиент
         """
         # создание объекта класса Dev
-        self.change_module = Dev(client, self.modules[module])
+        self.change_module = Dev(self.change_client, self.modules[module])
         # очистка device_list
         self.device_list.clear()
         # вывод свойств модуля на device_list
@@ -57,11 +63,19 @@ class MainWin(Ui_MainWindow):
         """
         # очистка device_list
         self.device_list.clear()
+        # обновление параметров модуля
+        self.change_module.client = self.change_client.get('name')
+        self.change_module.ip = self.change_client.get('ip')
+        self.change_module.port = self.change_client.get('port')
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
         # чтение данных из модуля и вывод в device_list
         self.device_list.addItem(raed_module_info(self.change_module))
         # чтение сценариев из модуля, добавление их в объект и вывод в device_list
+        # если прибор не найден, вывод сообщение об ошибке
         self.change_module.scenarios = read_scenarios(self.change_module, 8)
         for scenario in self.change_module.scenarios:
-            self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))
+            if isinstance(scenario, dict):
+                self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))
+            else:
+                self.device_list.addItem(str(scenario))

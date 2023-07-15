@@ -3,7 +3,7 @@ class Dev:
     Класс для хранения информации о модуле
     """
     def __init__(self, client, module=None):
-        self.client = client.get("client") if client is not None else 'localhost'
+        self.client = client.get("name") if client is not None else 'localhost'
         self.ip = client.get("ip") if client is not None else '127.0.0.1'
         self.port = client.get("port") if client is not None else 502
         self.name = module.get('name') if module is not None else 'Default'
