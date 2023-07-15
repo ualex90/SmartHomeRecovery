@@ -57,9 +57,11 @@ class MainWin(Ui_MainWindow):
         """
         # очистка device_list
         self.device_list.clear()
-        # чтение сценариев из модуля и добавление их в объект
-        self.change_module.scenarios = read_scenarios(self.change_module, 8)
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
         # чтение данных из модуля и вывод в device_list
         self.device_list.addItem(raed_module_info(self.change_module))
+        # чтение сценариев из модуля, добавление их в объект и вывод в device_list
+        self.change_module.scenarios = read_scenarios(self.change_module, 8)
+        for scenario in self.change_module.scenarios:
+            self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))

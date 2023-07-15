@@ -6,10 +6,10 @@ from src.utils import write_config_module, get_config_modules
 # Создание объекта модуля (данные клиента tcp, данные модуля)
 modules = MODULES
 # modules = get_config_modules(CONFIG_MODULE)
-device = Dev(CLIENTS[0], modules[7])
+device = Dev(CLIENTS[1], modules[7])
 
 # Создание объекта со значениями по-умлолчанию(данные клиента tcp)
-default = Dev(CLIENTS[0])
+default = Dev(CLIENTS[1])
 
 # # Добавление сценариев в объект модуля
 # device.scenarios = read_scenarios(device, 1)

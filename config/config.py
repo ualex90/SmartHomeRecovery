@@ -8,7 +8,9 @@ CONFIG = Path(ROOT, "config")
 CONFIG_MODULE = Path(CONFIG, "config_modules.yaml")
 
 # Настройка устройств
-CLIENTS = [{"ip": "192.168.3.8", "port": 502}, {"ip": "192.168.3.9", "port": 502}]
+CLIENTS = [{"client": "USR-DR302", "ip": "192.168.3.4", "port": 502},
+           {"client": "USR-DR302_Test", "ip": "192.168.3.8", "port": 502},
+           {"client": "Test_Eth_Card", "ip": "192.168.3.9", "port": 502}]
 MODULES = [{"name": "Module_A3", "model": "Razumdom_DRM88R", "description": "Управление оборудованием 230V",
             "unit_id": 3, "baud_rate": 115200, "data_bits": 8, "parity": "N", "stop_bits": 1,
             "scenarios": []},

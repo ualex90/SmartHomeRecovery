@@ -107,7 +107,8 @@ def raed_module_info(device: Dev) -> str:
 Дата: {datetime(info[7], info[6], info[5], info[8], info[9]).strftime('%m.%d.%Y %H:%M')}
 Счетчик наработки часов: {info[21]}
 Счетчик записей flash: {info[22]}
-Количество переключений (~/=): {info[23]}/{info[24]}"""
+Количество переключений (~/=): {info[23]}/{info[24]}
+--------------------------------------------------------"""
     return 'unable to read register'
 
 
