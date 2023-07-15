@@ -10,21 +10,21 @@ device = Dev(CLIENTS[1], modules[0])
 # Создание объекта со значениями по-умлолчанию(данные клиента tcp)
 default = Dev(CLIENTS[0])
 
-# добавление сценариев в объект модуля
+# # Добавление сценариев в объект модуля
 # device.scenarios = read_scenarios(device, 1)
 
 # Свойства модуля
 print(device, "\n")
 
-# Информация из памяти устройства (Объект модуля)
+# # Информация из памяти устройства (Объект модуля)
 # print(raed_device_info(device))
 
 # Список сценариев устройства (Объект модуля, количество сценариев)
-# [print(i) for i in read_scenarios(device, 8)]
+[print(i) for i in read_scenarios(device, 8)]
 
-# Запись данных модуля в файл JSON
+# # Запись данных модуля в файл JSON
 # scenarios = read_scenarios(device, 8)
 # write_config_module(device, scenarios)
 
-# Запись параметров MODBUS и сценариев в память модуля, вывод результата
-[print(i) for i in write_module(device)]
+# # Запись параметров MODBUS и сценариев в память модуля, вывод результата
+# [print(i) for i in write_module(device)]

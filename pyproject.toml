@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.11"
 pymodbustcp = "^0.2.0"
 oyaml = "^1.0"
+update = "^0.0.1"
+pyqt6 = ">=6.4,<7.0"
+pyqt6-tools = "^6.4.2.3.3"
 
 
 [tool.poetry.group.dev.dependencies]
