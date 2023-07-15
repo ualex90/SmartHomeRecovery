@@ -63,13 +63,13 @@ class MainWin(Ui_MainWindow):
         """
         # очистка device_list
         self.device_list.clear()
-        # обновление параметров модуля
+        # обновление параметров клиента
         self.change_module.client = self.change_client.get('name')
         self.change_module.ip = self.change_client.get('ip')
         self.change_module.port = self.change_client.get('port')
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
-        # чтение данных из модуля и вывод в device_list
+        # чтение данных информации о модуле и вывод в device_list
         self.device_list.addItem(raed_module_info(self.change_module))
         # чтение сценариев из модуля, добавление их в объект и вывод в device_list
         # если прибор не найден, вывод сообщение об ошибке

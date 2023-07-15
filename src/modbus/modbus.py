@@ -109,7 +109,7 @@ def raed_module_info(device: Dev) -> str:
 Счетчик записей flash: {info[22]}
 Количество переключений (~/=): {info[23]}/{info[24]}
 --------------------------------------------------------"""
-    return 'unable to read register module_info'
+    return 'unable to read registers module_info'
 
 
 def read_scenarios(device: Dev, quantity=10) -> list:
@@ -178,27 +178,31 @@ def write_multiple_holdings(device: Dev, start_register, data):
     return "Ok" if is_ok else "Failed"
 
 
-def write_module(device: Dev, scenarios=None):
+def write_module(device: Dev, mb_settings=None, scenarios=None):
     """
     Запись параметров MODBUS и сценариев в память модуля
     :param device: Объект типа Dev
+    :param mb_settings: Параметры MODBUS
     :param scenarios: Список сценариев
     :return: Результат записи
     """
+    if mb_settings is None:
+        mb_settings = get_mb_set_value(device)
     if scenarios is None:
         scenarios = device.scenarios
 
     write_status = list()
 
-    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, 0, get_mb_set_value(device)))
-
+    # Запись параметров MODBUS
+    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, 0, mb_settings))
+    # Запись сценариев
     start_register = 100
-    for scenario in device.scenarios:
+    for scenario in scenarios:
         number = list(scenario.keys())[0]
         data = list(scenario.values())[0]
         write_status.append(number + ': ' + write_multiple_holdings(device, start_register, data))
         start_register += 20
-
+    # Перезагрузка
     write_status.append('Перезагрузка: ' + write_single_holding(device, device.reboot, '0xFF'))
 
     return write_status
