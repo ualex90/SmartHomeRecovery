@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow
 
-from config.config import CLIENTS
 from src.modbus.modbus import raed_module_info, read_scenarios
 from src.models.Dev import Dev
 from src.qt.UI.UI_MainWin import Ui_MainWindow
@@ -11,9 +10,10 @@ class MainWin(Ui_MainWindow):
     Main window. Основное окно приложения.
     Объект унаследован от сосзданной формы при помощи QT Designer.
     """
-    def __init__(self, clients, modules, MainWindow):
+    def __init__(self, clients, modules, config_modules, MainWindow):
         self.clients = clients
         self.modules = modules
+        self.config_modules = config_modules
         self.change_client = None
         self.change_module = None
         self.MainWindow = MainWindow
@@ -30,8 +30,8 @@ class MainWin(Ui_MainWindow):
         # Заполнение client_box списком  клиентов и запуск функции выбора модуля
         self.client_changed(0)
         for client in range(len(self.clients)):
-            self.client_box.addItem(self.clients[client].get("name"))
-        self.client_box.currentIndexChanged.connect(self.client_changed)
+            self.read_client_box.addItem(self.clients[client].get("name"))
+        self.read_client_box.currentIndexChanged.connect(self.client_changed)
 
         # Заполнение device_box списком модулей и запуск функции выбора модуля
         self.module_changed(0)
@@ -47,7 +47,7 @@ class MainWin(Ui_MainWindow):
 
     def module_changed(self, module):
         """
-        Выбора модуля. Создание объекта класса Dev.
+        Выбор модуля. Создание объекта класса Dev.
         :param module: выбранный модуль
         """
         # создание объекта класса Dev
@@ -67,13 +67,13 @@ class MainWin(Ui_MainWindow):
         self.change_module.client = self.change_client.get('name')
         self.change_module.ip = self.change_client.get('ip')
         self.change_module.port = self.change_client.get('port')
+        # чтение сценариев из модуля и добавление их в объект
+        self.change_module.scenarios = read_scenarios(self.change_module, 8)
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
         # чтение данных информации о модуле и вывод в device_list
         self.device_list.addItem(raed_module_info(self.change_module))
-        # чтение сценариев из модуля, добавление их в объект и вывод в device_list
-        # если прибор не найден, вывод сообщение об ошибке
-        self.change_module.scenarios = read_scenarios(self.change_module, 8)
+        # вывод сценариев в device_list если прибор не найден, вывод сообщение об ошибке
         for scenario in self.change_module.scenarios:
             if isinstance(scenario, dict):
                 self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))

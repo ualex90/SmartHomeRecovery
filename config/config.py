@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG = Path(ROOT, "config")
 
 # Пути файлов
-CONFIG_MODULE = Path(CONFIG, "config_modules.yaml")
+CONFIG_MODULES = Path(CONFIG, "config_modules.yaml")
 
 # Настройка устройств
 CLIENTS = [{"name": "USR-DR302", "ip": "192.168.3.4", "port": 502},

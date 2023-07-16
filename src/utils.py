@@ -1,6 +1,6 @@
 import yaml
 
-from config.config import CONFIG_MODULE
+from config.config import CONFIG_MODULES
 from src.models.Dev import Dev
 
 
@@ -81,10 +81,10 @@ def write_config_module(device: Dev, scenarios=None):
         scenarios = device.scenarios
 
     try:
-        with open(CONFIG_MODULE, "r", encoding="UTF-8") as file_in:
+        with open(CONFIG_MODULES, "r", encoding="UTF-8") as file_in:
             config_module = yaml.safe_load(file_in)
     except FileNotFoundError:
-        file = open(CONFIG_MODULE, "w")
+        file = open(CONFIG_MODULES, "w")
         file.close()
         config_module = dict()
 
@@ -98,7 +98,7 @@ def write_config_module(device: Dev, scenarios=None):
                                   "scenarios": scenarios,
                                   }
 
-    with open(CONFIG_MODULE, "w", encoding="UTF-8") as file_out:
+    with open(CONFIG_MODULES, "w", encoding="UTF-8") as file_out:
         yaml.safe_dump(config_module, file_out, sort_keys=False, allow_unicode=True)
 
     return "Ok"

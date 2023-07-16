@@ -31,5 +31,4 @@ addr: {self.ip}:{self.port}
 Модель: {self.model}
 Описание: {self.description}
 MODBUS: Unit ID {self.unit_id}, {self.baud_rate}/{self.data_bits}-{self.parity}-{self.stop_bits}
-Количество сценариев: {len(self.scenarios)}
 ----------------------------------------------------------------'''
