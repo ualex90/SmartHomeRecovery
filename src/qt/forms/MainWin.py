@@ -1,7 +1,9 @@
+import time
+
 from PyQt6.QtWidgets import QMainWindow
 
 from config.config import CLIENTS, MODULES, CONFIG_MODULES, UNIT_ID, BAUD_RATE, DATA_BITS, PARITY, STOP_BITS
-from src.modbus.modbus import raed_module_info, read_scenarios
+from src.modbus.modbus import raed_module_info, read_scenarios, read_single_holding, write_module
 from src.models.Client import Client
 from src.models.Dev import Dev
 from src.qt.UI.UI_MainWin import Ui_MainWindow
@@ -15,6 +17,7 @@ class MainWin(Ui_MainWindow):
     """
     def __init__(self, MainWindow):
         self.module = None
+        self.write_module = None
         self.read_client = None
         self.write_client = None
         self.unit_id = None
@@ -106,6 +109,12 @@ class MainWin(Ui_MainWindow):
         # Запуск записи в файл конфигурации модулей
         self.write_file_button.clicked.connect(self._write_config)
 
+        # Запуск проверки связи с модулем
+        self.check_connection_button.clicked.connect(self._check_connection)
+
+        # Запись параметров считанного устройства в новое
+        self.write_device_button.clicked.connect(self._write_device)
+
     def _module_changed(self, module):
         """
         Выбор модуля. Создание объекта класса Dev.
@@ -180,7 +189,7 @@ class MainWin(Ui_MainWindow):
         """
         # запись изменений в файл конфигурации модулей и вывод результата
         self.device_list.addItem(write_config_module(self.module))
-
+        self.search_status_label.setStyleSheet("background-color: rgb(46, 194, 126);")
     def _read_module(self):
         """
         Чтение памяти модуля
@@ -202,3 +211,20 @@ class MainWin(Ui_MainWindow):
             else:
                 self.device_list.addItem(str(scenario))
         self.device_list.addItem("----------------------------------------------------------------")
+
+    def _check_connection(self):
+        """
+        Проверка связи с модулем
+        """
+        self.write_module = Dev({'unit_id': self.unit_id})
+        unit_id = read_single_holding(self.write_module, self.write_client, 0)
+        if unit_id == hex(self.unit_id):
+            self.search_status_label.setStyleSheet("background-color: rgb(46, 194, 126);")
+            self.search_status_label.setText("Успешно")
+            print("Checking connection")
+        else:
+            self.search_status_label.setStyleSheet("background-color: rgb(237, 0, 0);")
+            self.search_status_label.setText("Ошибка")
+
+    def _write_device(self):
+        write_module(self.module, self.write_module, self.write_client)

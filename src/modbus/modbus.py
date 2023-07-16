@@ -43,7 +43,7 @@ def get_mb_set_value(device: Dev) -> list:
     return [hr0, hr1]
 
 
-def get_single_holding(device: Dev, client, register) -> list:
+def read_single_holding(device: Dev, client, register) -> hex:
     """
     Чтение значения одного Holding Register
     :param device: Объект типа Dev
@@ -54,18 +54,17 @@ def get_single_holding(device: Dev, client, register) -> list:
 
     try:
         module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        reg = [hex(i) for i in module.read_holding_registers(register) if not None]
+        reg = module.read_holding_registers(register)
         time.sleep(0.05)
         module.close()
-    except ValueError and TypeError:
-        return [f"Error connecting to {client.ip}:{client.port}"]
+    except ValueError:
+        return ['Connecting Error']
+    else:
+        if reg:
+            return hex(reg[0])
 
-    if reg:
-        return reg
-    return ['unable to read register']
 
-
-def read_single_input(device: Dev, client, register) -> list:
+def read_single_input(device: Dev, client, register) -> list[hex]:
     """
     Чтение значения одного Input Register
     :param device: Объект типа Dev
@@ -184,11 +183,12 @@ def write_multiple_holdings(device: Dev, client, start_register, data):
     return "Ok" if is_ok else "Failed"
 
 
-def write_module(device: Dev, client, mb_settings=None, scenarios=None):
+def write_module(device: Dev, write_device: Dev, write_client, mb_settings=None, scenarios=None):
     """
     Запись параметров MODBUS и сценариев в память модуля
-    :param device: Объект типа Dev
-    :param client: Объект типа Client
+    :param device: Объект типа Dev. Данные подлежащие записи
+    :param write_device: Объект типа Dev. Содержит текущий адрес устройства
+    :param write_client: Объект типа Client
     :param mb_settings: Параметры MODBUS
     :param scenarios: Список сценариев
     :return: Результат записи
@@ -201,15 +201,15 @@ def write_module(device: Dev, client, mb_settings=None, scenarios=None):
     write_status = list()
 
     # Запись параметров MODBUS
-    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, client, 0, mb_settings))
+    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(write_device, write_client, 0, mb_settings))
     # Запись сценариев
     start_register = 100
     for scenario in scenarios:
         number = list(scenario.keys())[0]
         data = list(scenario.values())[0]
-        write_status.append(number + ': ' + write_multiple_holdings(device, client, start_register, data))
+        write_status.append(number + ': ' + write_multiple_holdings(write_device, write_client, start_register, data))
         start_register += 20
     # Перезагрузка
-    write_status.append('Перезагрузка: ' + write_single_holding(device, client, device.reboot, '0xFF'))
+    write_status.append('Перезагрузка: ' + write_single_holding(write_device, write_client, device.reboot, '0xFF'))
 
     return write_status

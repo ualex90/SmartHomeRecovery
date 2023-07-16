@@ -97,7 +97,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="search_module_button">
+   <widget class="QPushButton" name="check_connection_button">
     <property name="geometry">
      <rect>
       <x>990</x>
@@ -107,7 +107,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Найти модуль</string>
+     <string>Проверка связи</string>
     </property>
    </widget>
    <widget class="QComboBox" name="write_client_box">
@@ -195,10 +195,10 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(204, 0, 0);</string>
+     <string notr="true">background-color: rgb(154, 153, 150);</string>
     </property>
     <property name="text">
-     <string>None</string>
+     <string>waiting</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
