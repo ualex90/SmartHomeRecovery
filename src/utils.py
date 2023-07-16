@@ -1,3 +1,5 @@
+import os
+
 import yaml
 
 from config.config import CONFIG_MODULES
@@ -47,27 +49,29 @@ def get_config_modules(file) -> list:
     :param file: Путь к файлу конфигурации модуля.
     :return: Конфигурация модулей.
     """
-    with open(file, "r", encoding="UTF-8") as file_in:
-        data = yaml.safe_load(file_in)
+    if os.path.exists(file):
+        with open(file, "r", encoding="UTF-8") as file_in:
+            data = yaml.safe_load(file_in)
 
-    config_modules = list()
-    for name, data in data.items():
-        config_module = dict()
-        config_module["name"] = name
-        config_module["model"] = data.get("model")
-        config_module["description"] = data.get("description")
-        config_module["unit_id"] = data.get("unit_id")
-        config_module["baud_rate"] = data.get("baud_rate")
-        config_module["data_bits"] = data.get("data_bits")
-        config_module["parity"] = data.get("parity")
-        config_module["stop_bits"] = data.get("stop_bits")
-        config_module["scenarios"] = data.get("scenarios")
-        config_modules.append(config_module)
+        config_modules = list()
+        if isinstance(data, dict):
+            for name, data in data.items():
+                config_module = dict()
+                config_module["name"] = name
+                config_module["model"] = data.get("model")
+                config_module["description"] = data.get("description")
+                config_module["unit_id"] = data.get("unit_id")
+                config_module["baud_rate"] = data.get("baud_rate")
+                config_module["data_bits"] = data.get("data_bits")
+                config_module["parity"] = data.get("parity")
+                config_module["stop_bits"] = data.get("stop_bits")
+                config_module["scenarios"] = data.get("scenarios")
+                config_modules.append(config_module)
+        return config_modules
+    return ["No file"]
 
-    return config_modules
 
-
-def write_config_module(device: Dev, scenarios=None):
+def write_config_module(device: Dev, scenarios=None) -> str:
     """
     Запись конфигурации модуля в файл.
     Если файл не существует, он будет создан.
@@ -87,7 +91,6 @@ def write_config_module(device: Dev, scenarios=None):
         file = open(CONFIG_MODULES, "w")
         file.close()
         config_module = dict()
-
     config_module[device.name] = {"model": device.model,
                                   "description": device.description,
                                   "unit_id": device.unit_id,
@@ -101,4 +104,5 @@ def write_config_module(device: Dev, scenarios=None):
     with open(CONFIG_MODULES, "w", encoding="UTF-8") as file_out:
         yaml.safe_dump(config_module, file_out, sort_keys=False, allow_unicode=True)
 
-    return "Ok"
+    # !!! ПРОПИСАТЬ ЛОГИКУ ПРОВЕРКИ НА ЗАПИСЬ !!!
+    return "Запись конфигурации модуля в файл успешно завершена"

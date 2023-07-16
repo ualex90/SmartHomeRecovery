@@ -43,62 +43,65 @@ def get_mb_set_value(device: Dev) -> list:
     return [hr0, hr1]
 
 
-def get_single_holding(device: Dev, register) -> list:
+def get_single_holding(device: Dev, client, register) -> list:
     """
     Чтение значения одного Holding Register
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param register: Номер регистра
     :return: Значение регистра hex
     """
 
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         reg = [hex(i) for i in client.read_holding_registers(register) if not None]
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        return [f"Error connecting to {device.ip}:{device.port}"]
+        return [f"Error connecting to {client.ip}:{client.port}"]
 
     if reg:
         return reg
     return ['unable to read register']
 
 
-def read_single_input(device: Dev, register) -> list:
+def read_single_input(device: Dev, client, register) -> list:
     """
     Чтение значения одного Input Register
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param register: Номер регистра
     :return: Значение регистра hex
     """
 
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         reg = [hex(i) for i in client.read_input_registers(register) if not None]
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        return [f"Error connecting to {device.ip}:{device.port}"]
+        return [f"Error connecting to {client.ip}:{client.port}"]
 
     if reg:
         return reg
     return ['unable to read register']
 
 
-def raed_module_info(device: Dev) -> str:
+def raed_module_info(device: Dev, client) -> str:
     """"
     Чтение информации о устройстве
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :return: Информация о устройстве
     """
 
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         info = client.read_input_registers(9000, 25)
         time.sleep(0.05)
         client.close()
     except ValueError and TypeError:
-        return f"Error connecting to {device.ip}:{device.port}"
+        return f"Error connecting to {client.ip}:{client.port}"
 
     if info:
         return f"""Тип устройства: {info[3]}
@@ -112,17 +115,18 @@ def raed_module_info(device: Dev) -> str:
     return 'unable to read registers module_info'
 
 
-def read_scenarios(device: Dev, quantity=10) -> list:
+def read_scenarios(device: Dev, client, quantity=10) -> list:
     """"
     Чтение сценариев с устройства
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param quantity: количество запрашиваемых сценариев
     :return: Список сценариев hex
     """
 
     scenarios = list()
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         start_register = 100
         for i in range(quantity):
             regs = [hex(i) for i in client.read_holding_registers(start_register, 13) if not None]
@@ -134,54 +138,57 @@ def read_scenarios(device: Dev, quantity=10) -> list:
             start_register += 20
         client.close()
     except ValueError and TypeError:
-        return [f"Error connecting to {device.ip}:{device.port}"]
+        return [f"Error connecting to {client.ip}:{client.port}"]
 
     return scenarios
 
 
-def write_single_holding(device: Dev, register, data):
+def write_single_holding(device: Dev, client, register, data):
     """
     Запись значения одного Holding Register
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param register: Номер регистра
     :param data: Значение регистра hex
     :return: True если запись успешно записана или ошибка
     """
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         is_ok = client.write_single_register(register, int(data, 16))
         time.sleep(0.1)
         client.close()
     except ValueError and TypeError:
-        return [f"Error connecting to {device.ip}:{device.port}"]
+        return [f"Error connecting to {client.ip}:{client.port}"]
 
     return "Ok" if is_ok else "Failed"
 
 
-def write_multiple_holdings(device: Dev, start_register, data):
+def write_multiple_holdings(device: Dev, client, start_register, data):
     """
     Запись значения одного Holding Register
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param start_register: Номер начального регистра
     :param data: Значение регистра hex
     :return: True если запись успешно записана или ошибка
     """
 
     try:
-        client = ModbusClient(host=device.ip, port=device.port, unit_id=device.unit_id, timeout=3)
+        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         is_ok = client.write_multiple_registers(start_register, [int(i, 16) for i in data])
         time.sleep(0.1)
         client.close()
     except ValueError:
-        return [f"Error connecting to {device.ip}:{device.port}"]
+        return [f"Error connecting to {client.ip}:{client.port}"]
 
     return "Ok" if is_ok else "Failed"
 
 
-def write_module(device: Dev, mb_settings=None, scenarios=None):
+def write_module(device: Dev, client, mb_settings=None, scenarios=None):
     """
     Запись параметров MODBUS и сценариев в память модуля
     :param device: Объект типа Dev
+    :param client: Объект типа Client
     :param mb_settings: Параметры MODBUS
     :param scenarios: Список сценариев
     :return: Результат записи
@@ -194,15 +201,15 @@ def write_module(device: Dev, mb_settings=None, scenarios=None):
     write_status = list()
 
     # Запись параметров MODBUS
-    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, 0, mb_settings))
+    write_status.append('Параметры MODBUS: ' + write_multiple_holdings(device, client, 0, mb_settings))
     # Запись сценариев
     start_register = 100
     for scenario in scenarios:
         number = list(scenario.keys())[0]
         data = list(scenario.values())[0]
-        write_status.append(number + ': ' + write_multiple_holdings(device, start_register, data))
+        write_status.append(number + ': ' + write_multiple_holdings(device, client, start_register, data))
         start_register += 20
     # Перезагрузка
-    write_status.append('Перезагрузка: ' + write_single_holding(device, device.reboot, '0xFF'))
+    write_status.append('Перезагрузка: ' + write_single_holding(device, client, device.reboot, '0xFF'))
 
     return write_status

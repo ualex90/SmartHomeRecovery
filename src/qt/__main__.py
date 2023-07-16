@@ -9,12 +9,11 @@ from src.utils import get_config_modules
 def main():
     # Чтение конфигурации из файла
     modules = MODULES
-    config_modules = get_config_modules(CONFIG_MODULES)
 
     # Запуск приложения
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
-    main_win = MainWin(CLIENTS, modules, config_modules, MainWindow)
+    main_win = MainWin(CLIENTS, modules, MainWindow)
     main_win.setupUi(MainWindow)
     MainWindow.show()
     sys.exit(app.exec())
