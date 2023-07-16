@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow
 
-from config.config import CONFIG_MODULES, MODULES
+from config.config import CLIENTS, MODULES, CONFIG_MODULES, BAUD_RATE, DATA_BITS, PARITY, STOP_BITS
 from src.modbus.modbus import raed_module_info, read_scenarios
 from src.models.Client import Client
 from src.models.Dev import Dev
@@ -13,9 +13,10 @@ class MainWin(Ui_MainWindow):
     Main window. Основное окно приложения.
     Объект унаследован от сосзданной формы при помощи QT Designer.
     """
-    def __init__(self, clients, modules, MainWindow):
-        self.clients = clients
-        self.modules = modules
+    def __init__(self, MainWindow):
+        self.clients = CLIENTS
+        self.modules = MODULES
+        self.config_modules_file = CONFIG_MODULES
         self.config_modules = None
         self.change_client = None
         self.change_module = None
@@ -31,31 +32,33 @@ class MainWin(Ui_MainWindow):
         super().setupUi(self.MainWindow)
 
         # Заполнение client_box списком  клиентов и запуск функции выбора модуля
-        self.client_changed(0)
+        self._client_changed(0)
         for client in range(len(self.clients)):
             self.read_client_box.addItem(self.clients[client].get("name"))
-        self.read_client_box.currentIndexChanged.connect(self.client_changed)
+        self.read_client_box.currentIndexChanged.connect(self._client_changed)
 
         # Заполнение device_box списком модулей и запуск функции выбора модуля
-        self.module_changed(0)
+        self._module_changed(0)
         for module in range(len(self.modules)):
             self.device_box.addItem(self.modules[module].get("name"))
-        self.device_box.currentIndexChanged.connect(self.module_changed)
+        self.device_box.currentIndexChanged.connect(self._module_changed)
 
         # Запуск чтения памяти модуля
-        self.raed_device_button.clicked.connect(self.read_module)
+        self.raed_device_button.clicked.connect(self._read_module)
 
         # Запуск чтения из файла конфигурации модулей
-        self.raed_file_button.clicked.connect(self.read_config)
+        self.raed_file_button.clicked.connect(self._read_config)
 
         # Запуск записи в файл конфигурации модулей
-        self.write_file_button.clicked.connect(self.write_config)
+        self.write_file_button.clicked.connect(self._write_config)
 
-    def client_changed(self, client):
+        # Заполнение client_box списком  клиентов и запуск функции выбора модуля
+
+    def _client_changed(self, client):
         # создание объекта класса Client
         self.change_client = Client(self.clients[client])
 
-    def module_changed(self, module):
+    def _module_changed(self, module):
         """
         Выбор модуля. Создание объекта класса Dev.
         :param module: выбранный модуль
@@ -67,12 +70,12 @@ class MainWin(Ui_MainWindow):
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.change_module.__str__())
 
-    def read_config(self) -> str:
+    def _read_config(self) -> str:
         """
         Запуск чтения из файла конфигурации модулей
         :return: Результат
         """
-        self.config_modules = get_config_modules(CONFIG_MODULES)
+        self.config_modules = get_config_modules(self.config_modules_file)
         for module in self.config_modules:
             if module.get("name") == self.device_box.currentText():
                 self.change_module = Dev(module)
@@ -97,15 +100,14 @@ class MainWin(Ui_MainWindow):
         self.device_list.addItem("Отсутствует конфигурация в файле")
         return "Failed"
 
-    def write_config(self):
+    def _write_config(self):
         """
         Запись изменений в файл конфигурации модулей
-        :return: Результат
         """
         # запись изменений в файл конфигурации модулей и вывод результата
         self.device_list.addItem(write_config_module(self.change_module))
 
-    def read_module(self):
+    def _read_module(self):
         """
         Чтение памяти модуля
         """

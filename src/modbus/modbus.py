@@ -53,10 +53,10 @@ def get_single_holding(device: Dev, client, register) -> list:
     """
 
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        reg = [hex(i) for i in client.read_holding_registers(register) if not None]
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        reg = [hex(i) for i in module.read_holding_registers(register) if not None]
         time.sleep(0.05)
-        client.close()
+        module.close()
     except ValueError and TypeError:
         return [f"Error connecting to {client.ip}:{client.port}"]
 
@@ -75,10 +75,10 @@ def read_single_input(device: Dev, client, register) -> list:
     """
 
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        reg = [hex(i) for i in client.read_input_registers(register) if not None]
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        reg = [hex(i) for i in module.read_input_registers(register) if not None]
         time.sleep(0.05)
-        client.close()
+        module.close()
     except ValueError and TypeError:
         return [f"Error connecting to {client.ip}:{client.port}"]
 
@@ -96,10 +96,10 @@ def raed_module_info(device: Dev, client) -> str:
     """
 
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        info = client.read_input_registers(9000, 25)
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        info = module.read_input_registers(9000, 25)
         time.sleep(0.05)
-        client.close()
+        module.close()
     except ValueError and TypeError:
         return f"Error connecting to {client.ip}:{client.port}"
 
@@ -126,17 +126,17 @@ def read_scenarios(device: Dev, client, quantity=10) -> list:
 
     scenarios = list()
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         start_register = 100
         for i in range(quantity):
-            regs = [hex(i) for i in client.read_holding_registers(start_register, 13) if not None]
+            regs = [hex(i) for i in module.read_holding_registers(start_register, 13) if not None]
             if regs:
                 scenarios.append({("Сценарий " + str(i)): regs})
             else:
                 scenarios.append({("Сценарий " + str(i)): 'unable to read registers'})
             time.sleep(0.05)
             start_register += 20
-        client.close()
+        module.close()
     except ValueError and TypeError:
         return [f"Error connecting to {client.ip}:{client.port}"]
 
@@ -153,10 +153,10 @@ def write_single_holding(device: Dev, client, register, data):
     :return: True если запись успешно записана или ошибка
     """
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        is_ok = client.write_single_register(register, int(data, 16))
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        is_ok = module.write_single_register(register, int(data, 16))
         time.sleep(0.1)
-        client.close()
+        module.close()
     except ValueError and TypeError:
         return [f"Error connecting to {client.ip}:{client.port}"]
 
@@ -174,10 +174,10 @@ def write_multiple_holdings(device: Dev, client, start_register, data):
     """
 
     try:
-        client = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
-        is_ok = client.write_multiple_registers(start_register, [int(i, 16) for i in data])
+        module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
+        is_ok = module.write_multiple_registers(start_register, [int(i, 16) for i in data])
         time.sleep(0.1)
-        client.close()
+        module.close()
     except ValueError:
         return [f"Error connecting to {client.ip}:{client.port}"]
 
