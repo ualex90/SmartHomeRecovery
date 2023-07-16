@@ -14,12 +14,13 @@ class MainWin(Ui_MainWindow):
     Объект унаследован от сосзданной формы при помощи QT Designer.
     """
     def __init__(self, MainWindow):
-        self.clients = CLIENTS
-        self.modules = MODULES
-        self.config_modules_file = CONFIG_MODULES
-        self.config_modules = None
-        self.change_client = None
-        self.change_module = None
+        self.module = None
+        self.read_client = None
+        self.write_client = None
+        self.baud_rate = None
+        self.data_bits = None
+        self.parity = None
+        self.stop_bits = None
         self.MainWindow = MainWindow
 
     def setupUi(self, window: QMainWindow):
@@ -31,17 +32,54 @@ class MainWin(Ui_MainWindow):
         """
         super().setupUi(self.MainWindow)
 
-        # Заполнение client_box списком  клиентов и запуск функции выбора модуля
-        self._client_changed(0)
-        for client in range(len(self.clients)):
-            self.read_client_box.addItem(self.clients[client].get("name"))
-        self.read_client_box.currentIndexChanged.connect(self._client_changed)
-
         # Заполнение device_box списком модулей и запуск функции выбора модуля
         self._module_changed(0)
-        for module in range(len(self.modules)):
-            self.device_box.addItem(self.modules[module].get("name"))
+        for index in range(len(MODULES)):
+            self.device_box.addItem(MODULES[index].get("name"))
+        self.device_box.setCurrentIndex(0)
         self.device_box.currentIndexChanged.connect(self._module_changed)
+
+        # Заполнение read_client_box списком  клиентов и запуск функции выбора модуля
+        self._read_client_set(0)
+        for index in range(len(CLIENTS)):
+            self.read_client_box.addItem(CLIENTS[index].get("name"))
+        self.read_client_box.setCurrentIndex(0)
+        self.read_client_box.currentIndexChanged.connect(self._read_client_set)
+
+        # Заполнение write_client_box списком  клиентов и запуск функции выбора модуля
+        self._write_client_set(1)
+        for index in range(len(CLIENTS)):
+            self.write_client_box.addItem(CLIENTS[index].get("name"))
+        self.write_client_box.setCurrentIndex(1)
+        self.write_client_box.currentIndexChanged.connect(self._write_client_set)
+
+        # Заполнение baud_rate_box списком  клиентов и запуск функции выбора модуля
+        self._baud_rate_set(0)
+        for index in BAUD_RATE:
+            self.baud_rate_box.addItem(str(index))
+        self.baud_rate_box.setCurrentIndex(0)
+        self.baud_rate_box.currentIndexChanged.connect(self._baud_rate_set)
+
+        # Заполнение data_bits_box списком  клиентов и запуск функции выбора модуля
+        self._data_bits_set(0)
+        for index in DATA_BITS:
+            self.data_bits_box.addItem(str(index))
+        self.data_bits_box.setCurrentIndex(0)
+        self.data_bits_box.currentIndexChanged.connect(self._data_bits_set)
+
+        # Заполнение parity_box списком  клиентов и запуск функции выбора модуля
+        self._parity_set(0)
+        for index in PARITY:
+            self.parity_box.addItem(str(index))
+        self.parity_box.setCurrentIndex(0)
+        self.parity_box.currentIndexChanged.connect(self._parity_set)
+
+        # Заполнение stop_bits_box списком  клиентов и запуск функции выбора модуля
+        self._stop_bits_set(0)
+        for index in STOP_BITS:
+            self.stop_bits_box.addItem(str(index))
+        self.stop_bits_box.setCurrentIndex(0)
+        self.stop_bits_box.currentIndexChanged.connect(self._stop_bits_set)
 
         # Запуск чтения памяти модуля
         self.raed_device_button.clicked.connect(self._read_module)
@@ -52,39 +90,53 @@ class MainWin(Ui_MainWindow):
         # Запуск записи в файл конфигурации модулей
         self.write_file_button.clicked.connect(self._write_config)
 
-        # Заполнение client_box списком  клиентов и запуск функции выбора модуля
-
-    def _client_changed(self, client):
-        # создание объекта класса Client
-        self.change_client = Client(self.clients[client])
-
     def _module_changed(self, module):
         """
         Выбор модуля. Создание объекта класса Dev.
         :param module: выбранный модуль
         """
         # создание объекта класса Dev
-        self.change_module = Dev(self.modules[module])
+        self.module = Dev(MODULES[module])
         # очистка device_list
         self.device_list.clear()
         # вывод свойств модуля на device_list
-        self.device_list.addItem(self.change_module.__str__())
+        self.device_list.addItem(self.module.__str__())
+
+    def _read_client_set(self, index):
+        # создание объекта класса Client
+        self.read_client = Client(CLIENTS[index])
+
+    def _write_client_set(self, index):
+        # создание объекта класса Client
+        self.write_client = Client(CLIENTS[index])
+
+    def _baud_rate_set(self, index):
+        self.baud_rate = BAUD_RATE[index]
+
+    def _data_bits_set(self, index):
+        self.data_bits = DATA_BITS[index]
+
+    def _parity_set(self, index):
+        self.parity = PARITY[index]
+
+    def _stop_bits_set(self, index):
+        self.stop_bits = STOP_BITS[index]
 
     def _read_config(self) -> str:
         """
         Запуск чтения из файла конфигурации модулей
         :return: Результат
         """
-        self.config_modules = get_config_modules(self.config_modules_file)
+        self.config_modules = get_config_modules(CONFIG_MODULES)
         for module in self.config_modules:
             if module.get("name") == self.device_box.currentText():
-                self.change_module = Dev(module)
+                self.module = Dev(module)
                 # очистка device_list
                 self.device_list.clear()
                 # вывод свойств модуля на device_list
-                self.device_list.addItem(self.change_module.__str__())
+                self.device_list.addItem(self.module.__str__())
                 # вывод сценариев в device_list если прибор не найден или вывод сообщения что нет сценариев
-                for scenario in self.change_module.scenarios:
+                for scenario in self.module.scenarios:
                     if isinstance(scenario, dict):
                         self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))
                     else:
@@ -95,7 +147,7 @@ class MainWin(Ui_MainWindow):
         # очистка device_list
         self.device_list.clear()
         # вывод свойств модуля на device_list
-        self.device_list.addItem(self.change_module.__str__())
+        self.device_list.addItem(self.module.__str__())
         # Вывод информационного сообщения
         self.device_list.addItem("Отсутствует конфигурация в файле")
         return "Failed"
@@ -105,7 +157,7 @@ class MainWin(Ui_MainWindow):
         Запись изменений в файл конфигурации модулей
         """
         # запись изменений в файл конфигурации модулей и вывод результата
-        self.device_list.addItem(write_config_module(self.change_module))
+        self.device_list.addItem(write_config_module(self.module))
 
     def _read_module(self):
         """
@@ -114,15 +166,15 @@ class MainWin(Ui_MainWindow):
         # очистка device_list
         self.device_list.clear()
         # вывод свойств клиента на device_list
-        self.device_list.addItem(self.change_client.__str__())
+        self.device_list.addItem(self.read_client.__str__())
         # вывод свойств модуля на device_list
-        self.device_list.addItem(self.change_module.__str__())
+        self.device_list.addItem(self.module.__str__())
         # чтение сценариев из модуля и добавление их в объект
-        self.change_module.scenarios = read_scenarios(self.change_module, self.change_client, 8)
+        self.module.scenarios = read_scenarios(self.module, self.read_client, 8)
         # чтение данных информации о модуле и вывод в device_list
-        self.device_list.addItem(raed_module_info(self.change_module, self.change_client))
+        self.device_list.addItem(raed_module_info(self.module, self.read_client))
         # вывод сценариев в device_list если прибор не найден, вывод сообщение об ошибке
-        for scenario in self.change_module.scenarios:
+        for scenario in self.module.scenarios:
             if isinstance(scenario, dict):
                 self.device_list.addItem(list(scenario.keys())[0] + ": " + str(list(scenario.values())[0]))
             else:

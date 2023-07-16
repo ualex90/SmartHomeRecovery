@@ -67,7 +67,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QComboBox" name="data_bit_box">
+   <widget class="QComboBox" name="data_bits_box">
     <property name="geometry">
      <rect>
       <x>830</x>
@@ -87,7 +87,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QComboBox" name="stop_bit_box">
+   <widget class="QComboBox" name="stop_bits_box">
     <property name="geometry">
      <rect>
       <x>930</x>
