@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow
 
-from config.config import CLIENTS, MODULES, CONFIG_MODULES, BAUD_RATE, DATA_BITS, PARITY, STOP_BITS
+from config.config import CLIENTS, MODULES, CONFIG_MODULES, UNIT_ID, BAUD_RATE, DATA_BITS, PARITY, STOP_BITS
 from src.modbus.modbus import raed_module_info, read_scenarios
 from src.models.Client import Client
 from src.models.Dev import Dev
@@ -17,6 +17,8 @@ class MainWin(Ui_MainWindow):
         self.module = None
         self.read_client = None
         self.write_client = None
+        self.unit_id = None
+        self.new_unit_id = None
         self.baud_rate = None
         self.data_bits = None
         self.parity = None
@@ -32,53 +34,67 @@ class MainWin(Ui_MainWindow):
         """
         super().setupUi(self.MainWindow)
 
-        # Заполнение device_box списком модулей и запуск функции выбора модуля
+        # МОДУЛЬ. Заполнение device_box списком модулей и запуск функции выбора
         self._module_changed(0)
         for index in range(len(MODULES)):
             self.device_box.addItem(MODULES[index].get("name"))
         self.device_box.setCurrentIndex(0)
         self.device_box.currentIndexChanged.connect(self._module_changed)
 
-        # Заполнение read_client_box списком  клиентов и запуск функции выбора модуля
+        # КЛИЕНТ ЧТЕНИЯ. Заполнение read_client_box списком клиентов и запуск функции выбора
         self._read_client_set(0)
         for index in range(len(CLIENTS)):
             self.read_client_box.addItem(CLIENTS[index].get("name"))
         self.read_client_box.setCurrentIndex(0)
         self.read_client_box.currentIndexChanged.connect(self._read_client_set)
 
-        # Заполнение write_client_box списком  клиентов и запуск функции выбора модуля
+        # КЛИЕНТ ЗАПИСИ. Заполнение write_client_box списком клиентов и запуск функции выбора
         self._write_client_set(1)
         for index in range(len(CLIENTS)):
             self.write_client_box.addItem(CLIENTS[index].get("name"))
         self.write_client_box.setCurrentIndex(1)
         self.write_client_box.currentIndexChanged.connect(self._write_client_set)
 
-        # Заполнение baud_rate_box списком  клиентов и запуск функции выбора модуля
+        # UNIT ID ТЕКУЩИЙ. Заполнение unit_id_box списком  клиентов и запуск функции выбора
+        self._unit_id_set(0)
+        for index in UNIT_ID:
+            self.unit_id_box.addItem(str(index))
+        self.unit_id_box.setCurrentIndex(0)
+        self.unit_id_box.currentIndexChanged.connect(self._unit_id_set)
+
+        # UNIT ID НОВЫЙ. Заполнение new_unit_id_box списком  клиентов и запуск функции выбора
+        self._new_unit_id_set(0)
+        for index in UNIT_ID:
+            self.new_unit_id_box.addItem(str(index))
+        self.new_unit_id_box.setCurrentIndex(0)
+        self.new_unit_id_box.currentIndexChanged.connect(self._new_unit_id_set)
+
+        # BAUD RATE НОВЫЙ. Заполнение baud_rate_box списком  клиентов и запуск функции выбора
         self._baud_rate_set(0)
         for index in BAUD_RATE:
             self.baud_rate_box.addItem(str(index))
         self.baud_rate_box.setCurrentIndex(0)
         self.baud_rate_box.currentIndexChanged.connect(self._baud_rate_set)
 
-        # Заполнение data_bits_box списком  клиентов и запуск функции выбора модуля
+        # DATA BITS НОВЫЙ. Заполнение data_bits_box списком  клиентов и запуск функции выбора
         self._data_bits_set(0)
         for index in DATA_BITS:
             self.data_bits_box.addItem(str(index))
         self.data_bits_box.setCurrentIndex(0)
         self.data_bits_box.currentIndexChanged.connect(self._data_bits_set)
 
-        # Заполнение parity_box списком  клиентов и запуск функции выбора модуля
+        # PARITY НОВЫЙ. Заполнение parity_box списком  клиентов и запуск функции выбора
         self._parity_set(0)
         for index in PARITY:
             self.parity_box.addItem(str(index))
         self.parity_box.setCurrentIndex(0)
         self.parity_box.currentIndexChanged.connect(self._parity_set)
 
-        # Заполнение stop_bits_box списком  клиентов и запуск функции выбора модуля
-        self._stop_bits_set(0)
+        # STOP BITS НОВЫЙ. Заполнение stop_bits_box списком  клиентов и запуск функции выбора
+        self._stop_bits_set(1)
         for index in STOP_BITS:
             self.stop_bits_box.addItem(str(index))
-        self.stop_bits_box.setCurrentIndex(0)
+        self.stop_bits_box.setCurrentIndex(1)
         self.stop_bits_box.currentIndexChanged.connect(self._stop_bits_set)
 
         # Запуск чтения памяти модуля
@@ -109,6 +125,12 @@ class MainWin(Ui_MainWindow):
     def _write_client_set(self, index):
         # создание объекта класса Client
         self.write_client = Client(CLIENTS[index])
+
+    def _unit_id_set(self, index):
+        self.unit_id = UNIT_ID[index]
+
+    def _new_unit_id_set(self, index):
+        self.new_unit_id = UNIT_ID[index]
 
     def _baud_rate_set(self, index):
         self.baud_rate = BAUD_RATE[index]

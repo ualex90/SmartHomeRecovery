@@ -7,6 +7,7 @@ CONFIG = Path(ROOT, "config")
 # Пути файлов
 CONFIG_MODULES = Path(CONFIG, "config_modules.yaml")
 
+UNIT_ID = [i for i in range(1, 13)]
 BAUD_RATE = [9600, 19200, 38400, 57600, 115200, 230400]
 DATA_BITS = [8]
 PARITY = ["N", "E", "O"]
