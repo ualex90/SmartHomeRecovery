@@ -227,4 +227,7 @@ class MainWin(Ui_MainWindow):
             self.search_status_label.setText("Ошибка")
 
     def _write_device(self):
+        """
+        Запись параметров в модуль
+        """
         write_module(self.module, self.write_module, self.write_client)
