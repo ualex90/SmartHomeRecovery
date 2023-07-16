@@ -190,6 +190,7 @@ class MainWin(Ui_MainWindow):
         # запись изменений в файл конфигурации модулей и вывод результата
         self.device_list.addItem(write_config_module(self.module))
         self.search_status_label.setStyleSheet("background-color: rgb(46, 194, 126);")
+
     def _read_module(self):
         """
         Чтение памяти модуля
@@ -221,7 +222,6 @@ class MainWin(Ui_MainWindow):
         if unit_id == hex(self.unit_id):
             self.search_status_label.setStyleSheet("background-color: rgb(46, 194, 126);")
             self.search_status_label.setText("Успешно")
-            print("Checking connection")
         else:
             self.search_status_label.setStyleSheet("background-color: rgb(237, 0, 0);")
             self.search_status_label.setText("Ошибка")
