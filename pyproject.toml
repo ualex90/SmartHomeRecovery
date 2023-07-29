@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "smarthomerecovery"
+version = "0.1.0"
+description = ""
+authors = ["u_alex90 <u_alex90@mail.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pymodbustcp = "^0.2.0"
+oyaml = "^1.0"
+pyqt6 = ">=6.4,<7.0"
+pyqt6-tools = "^6.4.2.3.3"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
