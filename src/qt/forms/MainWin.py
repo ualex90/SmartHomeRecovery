@@ -3,11 +3,12 @@ import time
 from PyQt6.QtWidgets import QMainWindow
 
 from config.config import CLIENTS, MODULES, CONFIG_MODULES, UNIT_ID, BAUD_RATE, DATA_BITS, PARITY, STOP_BITS
-from src.modbus.modbus import raed_module_info, read_scenarios, read_single_holding, write_module
+from src.modbus.modbus import raed_module_info, read_scenarios, read_single_holding, write_module, \
+    write_multiple_holdings, write_single_holding
 from src.models.Client import Client
 from src.models.Dev import Dev
 from src.qt.UI.UI_MainWin import Ui_MainWindow
-from src.utils import get_config_modules, write_config_module
+from src.utils import get_config_modules, write_config_module, get_mb_set_value
 
 
 class MainWin(Ui_MainWindow):
@@ -15,20 +16,20 @@ class MainWin(Ui_MainWindow):
     Main window. Основное окно приложения.
     Объект унаследован от сосзданной формы при помощи QT Designer.
     """
-    def __init__(self, MainWindow):
+    def __init__(self, MainWindow: QMainWindow) -> None:
         self.module = None
         self.write_module = None
         self.read_client = None
         self.write_client = None
         self.unit_id = None
         self.new_unit_id = None
-        self.baud_rate = None
-        self.data_bits = None
-        self.parity = None
-        self.stop_bits = None
+        self.new_baud_rate = None
+        self.new_data_bits = None
+        self.new_parity = None
+        self.new_stop_bits = None
         self.MainWindow = MainWindow
 
-    def setupUi(self, window: QMainWindow):
+    def setupUi(self, window: QMainWindow) -> None:
         """
         Вызывается при создании объекта формы.
         Здесь подключаются сигналы от виджетов
@@ -73,32 +74,32 @@ class MainWin(Ui_MainWindow):
         self.new_unit_id_box.currentIndexChanged.connect(self._new_unit_id_set)
 
         # BAUD RATE НОВЫЙ. Заполнение baud_rate_box списком  клиентов и запуск функции выбора
-        self._baud_rate_set(0)
+        self._new_baud_rate_set(0)
         for index in BAUD_RATE:
-            self.baud_rate_box.addItem(str(index))
-        self.baud_rate_box.setCurrentIndex(0)
-        self.baud_rate_box.currentIndexChanged.connect(self._baud_rate_set)
+            self.new_baud_rate_box.addItem(str(index))
+        self.new_baud_rate_box.setCurrentIndex(0)
+        self.new_baud_rate_box.currentIndexChanged.connect(self._new_baud_rate_set)
 
         # DATA BITS НОВЫЙ. Заполнение data_bits_box списком  клиентов и запуск функции выбора
-        self._data_bits_set(0)
+        self._new_data_bits_set(0)
         for index in DATA_BITS:
-            self.data_bits_box.addItem(str(index))
-        self.data_bits_box.setCurrentIndex(0)
-        self.data_bits_box.currentIndexChanged.connect(self._data_bits_set)
+            self.new_data_bits_box.addItem(str(index))
+        self.new_data_bits_box.setCurrentIndex(0)
+        self.new_data_bits_box.currentIndexChanged.connect(self._new_data_bits_set)
 
         # PARITY НОВЫЙ. Заполнение parity_box списком  клиентов и запуск функции выбора
-        self._parity_set(0)
+        self._new_parity_set(0)
         for index in PARITY:
-            self.parity_box.addItem(str(index))
-        self.parity_box.setCurrentIndex(0)
-        self.parity_box.currentIndexChanged.connect(self._parity_set)
+            self.new_parity_box.addItem(str(index))
+        self.new_parity_box.setCurrentIndex(0)
+        self.new_parity_box.currentIndexChanged.connect(self._new_parity_set)
 
         # STOP BITS НОВЫЙ. Заполнение stop_bits_box списком  клиентов и запуск функции выбора
-        self._stop_bits_set(1)
+        self._new_stop_bits_set(1)
         for index in STOP_BITS:
-            self.stop_bits_box.addItem(str(index))
-        self.stop_bits_box.setCurrentIndex(1)
-        self.stop_bits_box.currentIndexChanged.connect(self._stop_bits_set)
+            self.new_stop_bits_box.addItem(str(index))
+        self.new_stop_bits_box.setCurrentIndex(1)
+        self.new_stop_bits_box.currentIndexChanged.connect(self._new_stop_bits_set)
 
         # Запуск чтения памяти модуля
         self.raed_device_button.clicked.connect(self._read_module)
@@ -115,43 +116,49 @@ class MainWin(Ui_MainWindow):
         # Запись параметров считанного устройства в новое
         self.write_device_button.clicked.connect(self._write_device)
 
-    def _module_changed(self, module):
+        # Перезагрузка модуля
+        self.reboot_device_button.clicked.connect(self._reboot_device)
+
+        # запись новых параметров modbus
+        self.write_mb_set_button.clicked.connect(self._write_mb_set)
+
+    def _module_changed(self, index: int) -> None:
         """
         Выбор модуля. Создание объекта класса Dev.
-        :param module: выбранный модуль
+        :param index: индекс выбранного модуля из списка
         """
         # создание объекта класса Dev
-        self.module = Dev(MODULES[module])
+        self.module = Dev(MODULES[index])
         # очистка device_list
         self.device_list.clear()
         # вывод свойств модуля на device_list
         self.device_list.addItem(self.module.__str__())
 
-    def _read_client_set(self, index):
+    def _read_client_set(self, index: int) -> None:
         # создание объекта класса Client
         self.read_client = Client(CLIENTS[index])
 
-    def _write_client_set(self, index):
+    def _write_client_set(self, index: int) -> None:
         # создание объекта класса Client
         self.write_client = Client(CLIENTS[index])
 
-    def _unit_id_set(self, index):
+    def _unit_id_set(self, index: int) -> None:
         self.unit_id = UNIT_ID[index]
 
-    def _new_unit_id_set(self, index):
+    def _new_unit_id_set(self, index: int) -> None:
         self.new_unit_id = UNIT_ID[index]
 
-    def _baud_rate_set(self, index):
-        self.baud_rate = BAUD_RATE[index]
+    def _new_baud_rate_set(self, index: int) -> None:
+        self.new_baud_rate = BAUD_RATE[index]
 
-    def _data_bits_set(self, index):
-        self.data_bits = DATA_BITS[index]
+    def _new_data_bits_set(self, index: int) -> None:
+        self.new_data_bits = DATA_BITS[index]
 
-    def _parity_set(self, index):
-        self.parity = PARITY[index]
+    def _new_parity_set(self, index: int) -> None:
+        self.new_parity = PARITY[index]
 
-    def _stop_bits_set(self, index):
-        self.stop_bits = STOP_BITS[index]
+    def _new_stop_bits_set(self, index: int) -> None:
+        self.new_stop_bits = STOP_BITS[index]
 
     def _read_config(self) -> str:
         """
@@ -183,7 +190,7 @@ class MainWin(Ui_MainWindow):
         self.device_list.addItem("Отсутствует конфигурация в файле")
         return "Failed"
 
-    def _write_config(self):
+    def _write_config(self) -> None:
         """
         Запись изменений в файл конфигурации модулей
         """
@@ -191,7 +198,7 @@ class MainWin(Ui_MainWindow):
         self.device_list.addItem(write_config_module(self.module))
         self.search_status_label.setStyleSheet("background-color: rgb(46, 194, 126);")
 
-    def _read_module(self):
+    def _read_module(self) -> None:
         """
         Чтение памяти модуля
         """
@@ -213,7 +220,7 @@ class MainWin(Ui_MainWindow):
                 self.device_list.addItem(str(scenario))
         self.device_list.addItem("----------------------------------------------------------------")
 
-    def _check_connection(self):
+    def _check_connection(self) -> None:
         """
         Проверка связи с модулем
         """
@@ -226,8 +233,24 @@ class MainWin(Ui_MainWindow):
             self.search_status_label.setStyleSheet("background-color: rgb(237, 0, 0);")
             self.search_status_label.setText("Ошибка")
 
-    def _write_device(self):
+    def _write_device(self) -> None:
         """
         Запись параметров в модуль
         """
         write_module(self.module, self.write_module, self.write_client)
+
+    def _reboot_device(self) -> None:
+        write_single_holding(self.write_module, self.write_client, self.write_module.reboot, '0xFF')
+
+    def _write_mb_set(self) -> None:
+        """
+        Запись новых настроек MODBUS в модуль
+        """
+        set_dev = Dev()
+        set_dev.unit_id = self.new_unit_id
+        set_dev.baud_rate = self.new_baud_rate
+        set_dev.data_bits = self.new_data_bits
+        set_dev.parity = self.new_parity
+        set_dev.stop_bits = self.new_stop_bits
+        mb_settings = list(map(hex, get_mb_set_value(set_dev)))
+        write_multiple_holdings(self.write_module, self.write_client, 0, mb_settings)

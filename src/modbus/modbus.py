@@ -3,10 +3,11 @@ from datetime import datetime
 
 from pyModbusTCP.client import ModbusClient
 
+from src.models.Client import Client
 from src.models.Dev import Dev
 
 
-def get_mb_set_value(device: Dev) -> list:
+def get_mb_set_value(device: Dev) -> list[hex]:
     """
     Генерация значений HR0 (адрес) и HR1 (параметры интерфейса).
     :param device: Объект типа Dev.
@@ -162,7 +163,7 @@ def write_single_holding(device: Dev, client, register, data):
     return "Ok" if is_ok else "Failed"
 
 
-def write_multiple_holdings(device: Dev, client, start_register, data):
+def write_multiple_holdings(device: Dev, client: Client, start_register, data):
     """
     Запись значения одного Holding Register
     :param device: Объект типа Dev
@@ -175,7 +176,7 @@ def write_multiple_holdings(device: Dev, client, start_register, data):
     try:
         module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         is_ok = module.write_multiple_registers(start_register, [int(i, 16) for i in data])
-        time.sleep(0.1)
+        time.sleep(0.5)
         module.close()
     except ValueError:
         return [f"Error connecting to {client.ip}:{client.port}"]
