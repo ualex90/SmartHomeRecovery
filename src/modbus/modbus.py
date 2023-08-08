@@ -176,7 +176,7 @@ def write_multiple_holdings(device: Dev, client: Client, start_register, data):
     try:
         module = ModbusClient(host=client.ip, port=client.port, unit_id=device.unit_id, timeout=3)
         is_ok = module.write_multiple_registers(start_register, [int(i, 16) for i in data])
-        time.sleep(0.5)
+        time.sleep(0.2)
         module.close()
     except ValueError:
         return [f"Error connecting to {client.ip}:{client.port}"]
@@ -210,7 +210,10 @@ def write_module(device: Dev, write_device: Dev, write_client, mb_settings=None,
         data = list(scenario.values())[0]
         write_status.append(number + ': ' + write_multiple_holdings(write_device, write_client, start_register, data))
         start_register += 20
+        print(f'\r{number} - Ok', end='')
+    print("\rЗаписано. Ожидание 10 секунд")
+    time.sleep(10)
     # Перезагрузка
     write_status.append('Перезагрузка: ' + write_single_holding(write_device, write_client, device.reboot, '0xFF'))
-
+    print('Готово!')
     return write_status
